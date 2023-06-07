@@ -1,4 +1,4 @@
 # INFO133-equipo01
 Nombres:
-  - Martin Ignacio Suárez Carsten
+  - Martin Ignacio Suárez Carstens
   - Luis Patricio Berrocal Villagra
