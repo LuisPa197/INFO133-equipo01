@@ -21,8 +21,9 @@ while (stay=="y"):
 		#print("--------------------------------")
 		for resultado in resultados:
 			
-			comuna= resultado[1]
-			print("| {:<25} |".format(comuna))
+			comuna= resultado[0]
+			cantidad = resultado [1]
+			print("| {:<25} | {:<10}|".format(comuna,cantidad))
 		#print("--------------------------------")
 
 	if (op=="2") :
@@ -40,31 +41,31 @@ while (stay=="y"):
 
 	if (op=="3") :
 		rer=str(input("De que region desea el listado de habitantes promedio por vivienda(codigo numerico):"))
-		consulta="select r.idRegion, r.nombre,  c.nombre, c.poblacion, c.viviendas, c.poblacion/c.viviendas as promedio_personas_por_vivienda from region r JOIN comuna c ON r.idRegion = c.idRegion WHERE r.idRegion ="+rer+"  order by densidad_poblacional DESC;"
+		consulta="select r.idRegion, r.nombre,  c.nombre, c.poblacion, c.viviendas, c.poblacion/c.viviendas as promedio_personas_por_vivienda from region r JOIN comuna c ON r.idRegion = c.idRegion WHERE r.idRegion ="+rer+"  order by promedio_personas_por_vivienda DESC;"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
 		for resultado in resultados:
-			comuna= resultado[1]
+			comuna= resultado[2]
 			habitantes_promedio_por_vivienda= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
 			print("| {:<25} | {:<10} |".format(comuna, habitantes_promedio_por_vivienda))
 
 	if (op=="4") :
 		rer=str(input("De que region quiere la cantidad de jardines infantiles por comuna (codigo numerico):"))
-		consulta=" select c.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion WHERE ed.nombre LIKE '%Jardín%' AND r.idRegion ="+rer +"group by c.nombre;"
+		consulta=" select c.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion WHERE ed.nombre LIKE '%Jardín%' AND r.idRegion ="+rer +" group by c.nombre;"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
 		for resultado in resultados:
-			comuna= resultado[1]
+			comuna= resultado[0]
 			cant_jardines= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
 			print("| {:<25} | {:<10} |".format(comuna, cant_jardines))
 	
 	if (op=="5") :
 		rer=str(input("De que region quiere obtener el listado de establecimientos municipales (codigo numerico):"))
-		consulta="select r.idRegion, c.idComuna, c.nombre, ed.nombre from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idregion = r.idregion where ed.nombre like '%municipal%' and idRegion="+rer+";"
+		consulta="select r.idRegion, c.idComuna, c.nombre, ed.nombre from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idregion = r.idregion where ed.nombre like '%municipal%' and r.idRegion= "+rer+";"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
@@ -89,12 +90,12 @@ while (stay=="y"):
 
 	if (op=="7") :
 		rer=str(input("De que region quiere obtener la cantidad de establecimientos educacionales que participan en el programa pace (codigo numerico):"))
-		consulta="select r.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion where ed.PACE = 1 and idRegion ='"+ rer +"'group by r.nombre;"
+		consulta="select r.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion where ed.PACE = 1 and r.idRegion ="+ rer +" group by r.nombre;"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
 		for resultado in resultados:
-			comuna= resultado[1]
+			comuna= resultado[0]
 			cantidad= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
 			print("| {:<25} | {:<10} |".format(comuna, cantidad))
