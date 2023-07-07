@@ -10,7 +10,7 @@ cursor = cnx.cursor()
 stay="y"
 
 while (stay=="y"):
-	op=input("opciones:\n1. Listado de region con X o mas habitantes\n2.Listado de comunas y su densidad poblacional de una region especifica\n3. Promedio de personas por vivienda de comunas de una region dada \n4. Cantidad de jardines infantiles por comuna de una region\n5. Listado de establecimientos municipales\n6.\n7. Establecimientos pace\n8.\n9.\n10.\n11.\n12.\n13.\n14.\n")
+	op=input("opciones:\n1. Listado de region con X o mas habitantes\n2.Listado de comunas y su densidad poblacional de una region especifica\n3. Promedio de personas por vivienda de comunas de una region dada \n4. Cantidad de jardines infantiles por comuna de una region\n5. Listado de establecimientos municipales\n6. ERROR\n7. Establecimientos pace\n8.Densidad de centros educacionales por comuna\n9.Densidad de centros de salud por comuna\n10.Top x comunas comunas con el mayor indice de DMCS\n11.Maximo y minimo de indice de DMCS de una region\n12.Top x conexiones per capita de una region\n13.Indice de vulnerabilidad por comuna\n14.\n")
 
 	
 	if (op=="1") :
@@ -20,9 +20,9 @@ while (stay=="y"):
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
 		for resultado in resultados:
-			comuna= resultado[0]
-			habitantes= resultado[1]
-			print("| {:<25} | {:<10} |".format(comuna,habitantes))
+			
+			comuna= resultado[1]
+			print("| {:<25} |".format(comuna))
 		#print("--------------------------------")
 
 	if (op=="2") :
@@ -40,31 +40,31 @@ while (stay=="y"):
 
 	if (op=="3") :
 		rer=str(input("De que region desea el listado de habitantes promedio por vivienda(codigo numerico):"))
-		consulta="select r.idRegion, r.nombre,  c.nombre, c.poblacion, c.viviendas, c.poblacion/c.viviendas as promedio_personas_por_vivienda from region r JOIN comuna c ON r.idRegion = c.idRegion WHERE r.idRegion ="+rer+"  order by promedio_personas_por_vivienda DESC;"
+		consulta="select r.idRegion, r.nombre,  c.nombre, c.poblacion, c.viviendas, c.poblacion/c.viviendas as promedio_personas_por_vivienda from region r JOIN comuna c ON r.idRegion = c.idRegion WHERE r.idRegion ="+rer+"  order by densidad_poblacional DESC;"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
 		for resultado in resultados:
-			comuna= resultado[2]
+			comuna= resultado[1]
 			habitantes_promedio_por_vivienda= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
 			print("| {:<25} | {:<10} |".format(comuna, habitantes_promedio_por_vivienda))
 
 	if (op=="4") :
 		rer=str(input("De que region quiere la cantidad de jardines infantiles por comuna (codigo numerico):"))
-		consulta=" select c.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion WHERE ed.nombre LIKE '%Jardín%' AND r.idRegion ="+rer+" GROUP BY c.nombre;"
+		consulta=" select c.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion WHERE ed.nombre LIKE '%Jardín%' AND r.idRegion ="+rer +"group by c.nombre;"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
 		for resultado in resultados:
-			comuna= resultado[0]
+			comuna= resultado[1]
 			cant_jardines= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
 			print("| {:<25} | {:<10} |".format(comuna, cant_jardines))
 	
 	if (op=="5") :
 		rer=str(input("De que region quiere obtener el listado de establecimientos municipales (codigo numerico):"))
-		consulta="select r.idRegion, c.idComuna, c.nombre, ed.nombre from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idregion = r.idregion where ed.nombre like '%municipal%' and r.idRegion="+rer+";"
+		consulta="select r.idRegion, c.idComuna, c.nombre, ed.nombre from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idregion = r.idregion where ed.nombre like '%municipal%' and idRegion="+rer+";"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
@@ -72,11 +72,102 @@ while (stay=="y"):
 			comuna= resultado[-2]
 			establecimiento= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
-			print("| {:<25} | {:<50} |".format(comuna, establecimiento))
+			print("| {:<25} | {:<10} |".format(comuna, establecimiento))
+
+	if (op=="6") :
+		rer=str(input("De que region quiere obtener el listado de establecimientos municipales (codigo numerico):"))
+		consulta="select r.idRegion, c.idComuna, c.nombre, ed.nombre from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idregion = r.idregion where ed.nombre like '%municipal%' and idRegion="+rer+";"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		#print("--------------------------------")
+		for resultado in resultados:
+			comuna= resultado[-2]
+			establecimiento= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, establecimiento))
 
 	if (op=="7") :
 		rer=str(input("De que region quiere obtener la cantidad de establecimientos educacionales que participan en el programa pace (codigo numerico):"))
-		consulta="select r.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion where ed.PACE = 1 and r.idRegion ="+ rer +" GROUP BY r.nombre;"
+		consulta="select r.nombre, count(ed.idEstablecimiento) from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion where ed.PACE = 1 and idRegion ="+ rer +"group by r.nombre;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		#print("--------------------------------")
+		for resultado in resultados:
+			comuna= resultado[1]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))
+
+	if (op=="8") :
+		consulta="select c.nombre, count(ed.idEstablecimiento)/c.superficie as establecimientos_de_educacion_por_km2 from establecimientoEducacion ed JOIN comuna c ON ed.idComuna = c.idComuna group by c.nombre;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		#print("--------------------------------")
+		for resultado in resultados:
+			comuna= resultado[0]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))	
+
+	if (op=="9") :
+		consulta="select c.nombre, count(sa.idCentro)/c.superficie as centros_de_salud_por_km2 from centroSalud sa JOIN comuna c ON sa.idComuna = c.idComuna group by c.nombre;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		#print("--------------------------------")
+		for resultado in resultados:
+			comuna= resultado[0]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))	
+
+	if (op=="10") :
+		consulta="select c.nombre, s.tasaDenunciasDMCS from seguridad s JOIN comuna c ON s.idComuna = c.idComuna order by s.tasaDenunciasDMCS DESC;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		#print("--------------------------------")
+		for resultado in resultados:
+			comuna= resultado[1]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))
+
+	if (op=="11") :
+		rer=str(input("De que region quiere obtener las comunas con maximo y minimo de DMCs (codigo numerico):"))
+		consulta="select c.nombre, s.tasaDenunciasDMCS from seguridad s JOIN comuna c ON s.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion WHERE c.idRegion = "+rer+" order by s.tasaDenunciasDMCS DESC LIMIT 1;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		print("Maximo:\n")
+		for resultado in resultados:
+			comuna= resultado[0]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))
+		consulta="select c.nombre, s.tasaDenunciasDMCS from seguridad s JOIN comuna c ON s.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion WHERE c.idRegion ="+rer+" order by s.tasaDenunciasDMCS ASC LIMIT 1;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		print("Minimo:\n")
+		for resultado in resultados:
+			comuna= resultado[0]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))
+
+	if (op=="12") :
+		rer=str(input("De que region quiere obtener la cantidad de conexiones per capita (codigo numerico):"))
+		rel=str(input("Cuantas quiere que se desplieguen (numerico):"))
+		consulta="select c.nombre, co.conexionesInternet/c.poblacion as conexiones_per_capita from conectividad co JOIN comuna c ON co.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion where c.idRegion = "+rer+" LIMIT "+rel+" DESC;"
+		cursor.execute(consulta)
+		resultados=cursor.fetchall()
+		#print("--------------------------------")
+		for resultado in resultados:
+			comuna= resultado[0]
+			cantidad= resultado[-1]
+			#print("|",comuna,"           |",densidad,"|")
+			print("| {:<25} | {:<10} |".format(comuna, cantidad))		
+
+	if (op=="13") :
+		rer=str(input("De que region quiere los indices de vulnerabilidad por couma (codigo numerico):"))
+		consulta="select c.nombre, s.indiceVulnerabilidad from seguridad s JOIN comuna c ON s.idComuna = c.idComuna JOIN region r ON c.idRegion = r.idRegion where c.idRegion = "+rer+" order by s.indiceVulnerabilidad;"
 		cursor.execute(consulta)
 		resultados=cursor.fetchall()
 		#print("--------------------------------")
@@ -85,10 +176,6 @@ while (stay=="y"):
 			cantidad= resultado[-1]
 			#print("|",comuna,"           |",densidad,"|")
 			print("| {:<25} | {:<10} |".format(comuna, cantidad))
-
-	
-
-
 
 	# Función para ejecutar una consulta SQL
 #	def ejecutar_consulta(consulta):
